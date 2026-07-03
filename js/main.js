@@ -132,6 +132,53 @@
       if (e.key === "ArrowLeft") step(-1);
       if (e.key === "ArrowRight") step(1);
     });
+
+    // Touch: swipe left/right to change photo, swipe down to close.
+    // The image follows the finger for feedback, then springs back or advances.
+    var lbImg = lb.querySelector("img");
+    var touch = null; // {x, y, axis}
+    lb.addEventListener("touchstart", function (e) {
+      if (e.touches.length !== 1) { touch = null; return; }
+      touch = { x: e.touches[0].clientX, y: e.touches[0].clientY, axis: null };
+      lbImg.style.transition = "none";
+    }, { passive: true });
+
+    lb.addEventListener("touchmove", function (e) {
+      if (!touch) return;
+      var dx = e.touches[0].clientX - touch.x;
+      var dy = e.touches[0].clientY - touch.y;
+      if (!touch.axis && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+        touch.axis = Math.abs(dx) >= Math.abs(dy) ? "x" : "y";
+      }
+      if (touch.axis === "x") {
+        lbImg.style.transform = "translateX(" + dx + "px)";
+        lbImg.style.opacity = Math.max(0.4, 1 - Math.abs(dx) / 600);
+      } else if (touch.axis === "y" && dy > 0) {
+        lbImg.style.transform = "translateY(" + dy + "px)";
+        lbImg.style.opacity = Math.max(0.3, 1 - dy / 400);
+      }
+    }, { passive: true });
+
+    lb.addEventListener("touchend", function (e) {
+      if (!touch) return;
+      var dx = e.changedTouches[0].clientX - touch.x;
+      var dy = e.changedTouches[0].clientY - touch.y;
+      var axis = touch.axis;
+      touch = null;
+      lbImg.style.transition = "transform 0.25s ease, opacity 0.25s ease";
+      if (axis === "x" && Math.abs(dx) > 55) {
+        step(dx < 0 ? 1 : -1); // updateLightbox swaps src; reset position
+        lbImg.style.transform = "";
+        lbImg.style.opacity = "";
+      } else if (axis === "y" && dy > 80) {
+        lb.classList.remove("open");
+        // reset after the overlay fade so the next open starts clean
+        setTimeout(function () { lbImg.style.transform = ""; lbImg.style.opacity = ""; }, 300);
+      } else {
+        lbImg.style.transform = "";
+        lbImg.style.opacity = "";
+      }
+    });
   }
 
   /* ----------------------------------------------------------------- films */

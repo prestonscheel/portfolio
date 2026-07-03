@@ -445,7 +445,7 @@ body.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-8px) rotate
   pointer-events: none;
   transition: opacity 0.3s ease;
 }
-.lightbox.open { opacity: 1; pointer-events: auto; }
+.lightbox.open { opacity: 1; pointer-events: auto; touch-action: none; }
 .lightbox img {
   max-width: min(92vw, 1400px);
   max-height: 82vh;
