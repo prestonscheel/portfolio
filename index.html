@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preston Scheel — Photographer & Videographer</title>
+  <meta name="description" content="Portfolio of Preston Scheel — automotive, portrait, and landscape photography and video.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preload" as="image" href="assets/img/lg/green-porsche-911-light-1.jpg">
+</head>
+<body>
+
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Preston Scheel — home">
+      <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><rect x="2" y="2" width="60" height="60" rx="6" stroke="currentColor" stroke-width="4"/><text x="32" y="43" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="30" font-weight="900" fill="currentColor" letter-spacing="-1">PS</text></svg>
+      <span>Preston Scheel</span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    <nav class="nav">
+      <a href="index.html#work">Work</a>
+      <a href="index.html#films">Films</a>
+      <a href="about.html">About</a>
+      <a href="contact.html" class="cta">Let's Talk</a>
+    </nav>
+  </header>
+
+  <!-- ================================================================ hero -->
+  <section class="hero">
+    <div class="hero-media">
+      <img src="assets/img/lg/green-porsche-911-light-1.jpg" alt="Porsche 993 lit dramatically in a dark studio" fetchpriority="high">
+    </div>
+    <div class="hero-inner">
+      <h1 class="hero-title">
+        <span class="line"><span>Preston</span></span>
+        <span class="line"><span>Scheel<span class="accent-dot">.</span></span></span>
+      </h1>
+      <div class="hero-meta">
+        <span data-site="heroTag">Photography &amp; Video</span>
+        <span class="scroll-hint">Scroll</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================= marquee -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span><b>Automotive</b> <i>●</i> People &amp; Animals <i>●</i> <b>City &amp; Landscape</b> <i>●</i> Films <i>●</i></span>
+      <span><b>Automotive</b> <i>●</i> People &amp; Animals <i>●</i> <b>City &amp; Landscape</b> <i>●</i> Films <i>●</i></span>
+    </div>
+  </div>
+
+  <!-- ================================================================ work -->
+  <section class="section" id="work">
+    <div class="section-head">
+      <h2>Selected <em>Work</em></h2>
+      <span class="count" data-count></span>
+    </div>
+    <div class="filters" role="group" aria-label="Filter work by category"></div>
+    <div class="grid" id="workGrid"></div>
+  </section>
+
+  <!-- =============================================================== films -->
+  <section class="section films" id="films">
+    <div class="section-head">
+      <h2>In <em>Motion</em></h2>
+      <span class="count">Short-form &amp; social</span>
+    </div>
+    <div class="film-row" id="filmRow"></div>
+  </section>
+
+  <!-- ======================================================== about teaser -->
+  <section class="section">
+    <div class="about-teaser">
+      <div>
+        <p class="reveal" data-site="blurb"></p>
+        <a class="link-arrow reveal" href="about.html">More about me <span class="arr">→</span></a>
+      </div>
+      <div class="portrait reveal">
+        <img src="assets/img/md/mazda-headshots-0008-preston-scheel.jpg" alt="Preston Scheel headshot" width="960" height="960" loading="lazy" decoding="async">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ services -->
+  <section class="section" id="services">
+    <div class="section-head">
+      <h2>What I <em>Do</em></h2>
+    </div>
+    <ul class="services-list">
+      <li><span>Automotive</span><span class="idx">01</span></li>
+      <li><span>Portraits &amp; Lifestyle</span><span class="idx">02</span></li>
+      <li><span>Weddings &amp; Events</span><span class="idx">03</span></li>
+      <li><span>Brand Content</span><span class="idx">04</span></li>
+      <li><span>Short-Form Video</span><span class="idx">05</span></li>
+      <li><span>City &amp; Landscape</span><span class="idx">06</span></li>
+    </ul>
+  </section>
+
+  <!-- ============================================================== footer -->
+  <section class="footer-cta">
+    <p class="eyebrow">Have a project in mind?</p>
+    <a class="big" href="contact.html">Let's make<br>something<span style="color:var(--accent)">.</span></a>
+  </section>
+  <footer class="site-footer">
+    <span>© <span data-year></span> Preston Scheel</span>
+    <div class="socials">
+      <a data-site="instagram" href="#" target="_blank" rel="noopener">Instagram</a>
+      <a data-site="linkedin" href="#" target="_blank" rel="noopener">LinkedIn</a>
+      <a data-site="email" href="#">Email</a>
+    </div>
+  </footer>
+
+  <!-- ============================================================ lightbox -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Image viewer">
+    <img src="" alt="">
+    <span class="lb-caption"></span>
+    <button class="lb-close" aria-label="Close">Close ✕</button>
+    <button class="lb-prev" aria-label="Previous image">←</button>
+    <button class="lb-next" aria-label="Next image">→</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
+  <script src="js/data.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+/* ==========================================================================
+   PRESTON SCHEEL — interactions & animation (GSAP + ScrollTrigger)
+   ========================================================================== */
+(function () {
+  "use strict";
+
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var hasGsap = typeof gsap !== "undefined";
+  if (hasGsap && typeof ScrollTrigger !== "undefined") gsap.registerPlugin(ScrollTrigger);
+
+  /* ---------------------------------------------------------------- header */
+  var header = document.querySelector(".site-header");
+  function onScroll() {
+    header.classList.toggle("scrolled", window.scrollY > 24);
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  var toggle = document.querySelector(".nav-toggle");
+  if (toggle) {
+    toggle.addEventListener("click", function () {
+      document.body.classList.toggle("nav-open");
+    });
+    document.querySelectorAll(".nav a").forEach(function (a) {
+      a.addEventListener("click", function () {
+        document.body.classList.remove("nav-open");
+      });
+    });
+  }
+
+  /* ------------------------------------------------- fill shared site data */
+  document.querySelectorAll("[data-site]").forEach(function (el) {
+    var key = el.getAttribute("data-site");
+    if (key === "email") {
+      if (el.tagName === "A") el.href = "mailto:" + SITE.email;
+      if (!el.textContent.trim()) el.textContent = SITE.email;
+    } else if (key === "instagram" || key === "linkedin") {
+      el.href = SITE[key];
+    } else if (SITE[key]) {
+      el.textContent = SITE[key];
+    }
+  });
+  var yearEl = document.querySelector("[data-year]");
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  /* ------------------------------------------------------------- work grid */
+  var grid = document.getElementById("workGrid");
+  var flatList = []; // currently displayed works, for the lightbox
+
+  function renderGrid(filter) {
+    if (!grid) return;
+    grid.innerHTML = "";
+    flatList = WORKS.filter(function (w) {
+      return filter === "all" || w.cat === filter;
+    });
+    var frag = document.createDocumentFragment();
+    flatList.forEach(function (w, i) {
+      var fig = document.createElement("figure");
+      fig.innerHTML =
+        '<img src="assets/img/md/' + w.slug + '.jpg" alt="' + w.title +
+        '" width="' + w.w + '" height="' + w.h + '" loading="lazy" decoding="async">' +
+        '<figcaption><span class="t">' + w.title + '</span><span class="c">' +
+        CATEGORIES[w.cat] + "</span></figcaption>";
+      fig.addEventListener("click", function () { openLightbox(i); });
+      frag.appendChild(fig);
+    });
+    grid.appendChild(frag);
+
+    var countEl = document.querySelector("[data-count]");
+    if (countEl) countEl.textContent = String(flatList.length).padStart(2, "0") + " frames";
+
+    if (hasGsap && !reduceMotion) {
+      gsap.set(grid.children, { opacity: 0, y: 30 });
+      ScrollTrigger.batch(grid.children, {
+        start: "top 92%",
+        once: true,
+        batchMax: 6,
+        onEnter: function (els) {
+          gsap.to(els, { opacity: 1, y: 0, duration: 0.8, stagger: 0.08, ease: "power3.out", overwrite: true });
+        },
+      });
+      ScrollTrigger.refresh();
+    }
+  }
+
+  var filterWrap = document.querySelector(".filters");
+  if (filterWrap && grid) {
+    var cats = Object.keys(CATEGORIES);
+    var btns = ['<button class="active" data-f="all">All</button>'];
+    cats.forEach(function (c) {
+      btns.push('<button data-f="' + c + '">' + CATEGORIES[c] + "</button>");
+    });
+    filterWrap.innerHTML = btns.join("");
+    filterWrap.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      filterWrap.querySelectorAll("button").forEach(function (x) { x.classList.remove("active"); });
+      b.classList.add("active");
+      renderGrid(b.getAttribute("data-f"));
+    });
+    renderGrid("all");
+  }
+
+  /* -------------------------------------------------------------- lightbox */
+  var lb = document.getElementById("lightbox");
+  var lbIndex = 0;
+  function openLightbox(i) {
+    if (!lb) return;
+    lbIndex = i;
+    updateLightbox();
+    lb.classList.add("open");
+  }
+  function updateLightbox() {
+    var w = flatList[lbIndex];
+    lb.querySelector("img").src = "assets/img/lg/" + w.slug + ".jpg";
+    lb.querySelector("img").alt = w.title;
+    lb.querySelector(".lb-caption").textContent =
+      w.title + " — " + CATEGORIES[w.cat] + " (" + (lbIndex + 1) + "/" + flatList.length + ")";
+  }
+  function step(d) {
+    lbIndex = (lbIndex + d + flatList.length) % flatList.length;
+    updateLightbox();
+  }
+  if (lb) {
+    lb.querySelector(".lb-close").addEventListener("click", function () { lb.classList.remove("open"); });
+    lb.querySelector(".lb-prev").addEventListener("click", function (e) { e.stopPropagation(); step(-1); });
+    lb.querySelector(".lb-next").addEventListener("click", function (e) { e.stopPropagation(); step(1); });
+    lb.addEventListener("click", function (e) { if (e.target === lb) lb.classList.remove("open"); });
+    document.addEventListener("keydown", function (e) {
+      if (!lb.classList.contains("open")) return;
+      if (e.key === "Escape") lb.classList.remove("open");
+      if (e.key === "ArrowLeft") step(-1);
+      if (e.key === "ArrowRight") step(1);
+    });
+  }
+
+  /* ----------------------------------------------------------------- films */
+  var filmRow = document.getElementById("filmRow");
+  if (filmRow && window.FILMS) {
+    FILMS.forEach(function (f) {
+      var el = document.createElement("div");
+      el.className = "film";
+      el.innerHTML =
+        '<img src="' + f.poster + '" alt="' + f.title + '" loading="lazy" decoding="async">' +
+        '<button class="play" aria-label="Play ' + f.title + '">' +
+        '<span class="btn-circle"></span>' +
+        '<span class="label">' + f.title + '</span>' +
+        '<span class="sub">' + f.caption + "</span></button>";
+      el.querySelector(".play").addEventListener("click", function () {
+        el.innerHTML =
+          '<video src="' + f.src + '" poster="' + f.poster + '" controls autoplay playsinline></video>';
+      });
+      filmRow.appendChild(el);
+    });
+  }
+
+  /* ------------------------------------------------------------ animations */
+  if (!hasGsap || reduceMotion) {
+    document.documentElement.classList.add("reduced-motion");
+    return;
+  }
+
+  // Hero title: lines rise in
+  var heroLines = document.querySelectorAll(".hero-title .line > span");
+  if (heroLines.length) {
+    gsap.from(heroLines, {
+      yPercent: 110,
+      duration: 1.1,
+      stagger: 0.12,
+      ease: "power4.out",
+      delay: 0.15,
+    });
+    gsap.from(".hero-meta", { opacity: 0, y: 20, duration: 0.9, delay: 0.7, ease: "power3.out" });
+    var heroImg = document.querySelector(".hero-media img");
+    if (heroImg) {
+      gsap.from(heroImg, { scale: 1.12, duration: 1.8, ease: "power2.out" });
+      gsap.to(heroImg, {
+        yPercent: 12,
+        ease: "none",
+        scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true },
+      });
+    }
+  }
+
+  // Generic reveal-on-scroll
+  document.querySelectorAll(".reveal").forEach(function (el) {
+    gsap.to(el, {
+      opacity: 1,
+      y: 0,
+      duration: 1,
+      ease: "power3.out",
+      scrollTrigger: { trigger: el, start: "top 88%", once: true },
+    });
+  });
+
+  // Section headings: slight slide
+  document.querySelectorAll(".section-head h2").forEach(function (el) {
+    gsap.from(el, {
+      xPercent: -4,
+      opacity: 0,
+      duration: 1,
+      ease: "power3.out",
+      scrollTrigger: { trigger: el, start: "top 90%", once: true },
+    });
+  });
+
+  // Services list rows
+  document.querySelectorAll(".services-list li").forEach(function (el, i) {
+    gsap.from(el, {
+      opacity: 0,
+      y: 24,
+      duration: 0.7,
+      delay: (i % 6) * 0.05,
+      ease: "power2.out",
+      scrollTrigger: { trigger: el, start: "top 94%", once: true },
+    });
+  });
+
+  // Big footer CTA
+  var big = document.querySelector(".footer-cta a.big");
+  if (big) {
+    gsap.from(big, {
+      yPercent: 30,
+      opacity: 0,
+      duration: 1.1,
+      ease: "power4.out",
+      scrollTrigger: { trigger: big, start: "top 92%", once: true },
+    });
+  }
+
+  // Page-hero (about / contact)
+  var pageH1 = document.querySelector(".page-hero h1");
+  if (pageH1) {
+    gsap.from(pageH1, { yPercent: 40, opacity: 0, duration: 1, ease: "power4.out", delay: 0.1 });
+    gsap.from(".page-hero .sub", { opacity: 0, y: 16, duration: 0.8, delay: 0.5, ease: "power3.out" });
+  }
+})();

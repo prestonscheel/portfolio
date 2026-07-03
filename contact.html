@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — Preston Scheel</title>
+  <meta name="description" content="Get in touch with Preston Scheel for photography and video commissions, campaigns, and collaborations.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Preston Scheel — home">
+      <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><rect x="2" y="2" width="60" height="60" rx="6" stroke="currentColor" stroke-width="4"/><text x="32" y="43" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="30" font-weight="900" fill="currentColor" letter-spacing="-1">PS</text></svg>
+      <span>Preston Scheel</span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    <nav class="nav">
+      <a href="index.html#work">Work</a>
+      <a href="index.html#films">Films</a>
+      <a href="about.html">About</a>
+      <a href="contact.html" class="cta active">Let's Talk</a>
+    </nav>
+  </header>
+
+  <section class="page-hero">
+    <h1>Say <em>Hello</em></h1>
+    <p class="sub">Commissions · Campaigns · Collaborations</p>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="contact-grid">
+      <a class="contact-card reveal" data-site="email" href="#">
+        <span class="k">Email</span>
+        <span class="v" data-site="email"></span>
+      </a>
+      <a class="contact-card reveal" data-site="instagram" href="#" target="_blank" rel="noopener">
+        <span class="k">Instagram</span>
+        <span class="v">@prestonscheel</span>
+      </a>
+      <a class="contact-card reveal" data-site="linkedin" href="#" target="_blank" rel="noopener">
+        <span class="k">LinkedIn</span>
+        <span class="v">Preston Scheel</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="footer-cta">
+    <p class="eyebrow">Prefer email?</p>
+    <a class="big" data-site="email" href="#">Drop me<br>a line<span style="color:var(--accent)">.</span></a>
+  </section>
+  <footer class="site-footer">
+    <span>© <span data-year></span> Preston Scheel</span>
+    <div class="socials">
+      <a data-site="instagram" href="#" target="_blank" rel="noopener">Instagram</a>
+      <a data-site="linkedin" href="#" target="_blank" rel="noopener">LinkedIn</a>
+      <a data-site="email" href="#">Email</a>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
+  <script src="js/data.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>

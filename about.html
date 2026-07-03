@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — Preston Scheel</title>
+  <meta name="description" content="About Preston Scheel — photographer and videographer working in automotive, portrait, and landscape imagery.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Preston Scheel — home">
+      <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><rect x="2" y="2" width="60" height="60" rx="6" stroke="currentColor" stroke-width="4"/><text x="32" y="43" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="30" font-weight="900" fill="currentColor" letter-spacing="-1">PS</text></svg>
+      <span>Preston Scheel</span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    <nav class="nav">
+      <a href="index.html#work">Work</a>
+      <a href="index.html#films">Films</a>
+      <a href="about.html" class="active">About</a>
+      <a href="contact.html" class="cta">Let's Talk</a>
+    </nav>
+  </header>
+
+  <section class="page-hero">
+    <h1>Behind<br>the <em>Lens</em></h1>
+    <p class="sub" data-site="role">Photographer &amp; Videographer</p>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="about-layout">
+      <div class="portrait reveal">
+        <img src="assets/img/lg/mazda-headshots-0008-preston-scheel.jpg" alt="Preston Scheel headshot" width="1920" height="1920">
+      </div>
+      <div class="about-copy" id="aboutCopy">
+        <!-- Paragraphs are filled in from js/data.js (SITE.about) -->
+        <h3>Services</h3>
+        <ul class="services-list" id="aboutServices" style="border-top:none"></ul>
+        <a class="link-arrow" href="contact.html">Work with me <span class="arr">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="footer-cta">
+    <p class="eyebrow">Have a project in mind?</p>
+    <a class="big" href="contact.html">Let's make<br>something<span style="color:var(--accent)">.</span></a>
+  </section>
+  <footer class="site-footer">
+    <span>© <span data-year></span> Preston Scheel</span>
+    <div class="socials">
+      <a data-site="instagram" href="#" target="_blank" rel="noopener">Instagram</a>
+      <a data-site="linkedin" href="#" target="_blank" rel="noopener">LinkedIn</a>
+      <a data-site="email" href="#">Email</a>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
+  <script src="js/data.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <script defer>
+    window.addEventListener("DOMContentLoaded", function () {
+      var copy = document.getElementById("aboutCopy");
+      SITE.about.slice().reverse().forEach(function (para) {
+        var p = document.createElement("p");
+        p.textContent = para;
+        copy.insertBefore(p, copy.firstChild);
+      });
+      var list = document.getElementById("aboutServices");
+      SITE.services.forEach(function (s, i) {
+        var li = document.createElement("li");
+        li.innerHTML = "<span>" + s + '</span><span class="idx">' + String(i + 1).padStart(2, "0") + "</span>";
+        list.appendChild(li);
+      });
+    });
+  </script>
+</body>
+</html>
