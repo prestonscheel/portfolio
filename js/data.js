@@ -93,13 +93,31 @@ window.WORKS = [
 ];
 
 /* --------------------------------------------------------------------------
-   FILMS — to add a video:
-   1. Drop an .mp4 (H.264, ideally under ~30MB) into assets/video/
-   2. Add a poster JPEG next to it (a frame from the video)
-   3. Add an entry here. "vertical: true" for 9:16 reels.
+   FILM CATEGORIES — key must match the "cat" field on each film below.
+   Films without a "cat" only show up under "All".
+   -------------------------------------------------------------------------- */
+window.FILM_CATEGORIES = {
+  customer: "Customer Experiences",
+  automotive: "Automotive",
+};
+
+/* --------------------------------------------------------------------------
+   FILMS — two kinds of entries:
+
+   Local video — drop an .mp4 (H.264, ideally under ~30MB) into assets/video/,
+   add a poster JPEG next to it (a frame from the video), then:
+   { type: "video", src: "assets/video/x.mp4", poster: "assets/video/x.jpg",
+     title: "...", caption: "...", cat: "automotive", vertical: true }
+
+   YouTube video — just the video ID from the share URL
+   (youtu.be/**qUy0frM-kdU** or watch?v=**qUy0frM-kdU**):
+   { type: "youtube", id: "qUy0frM-kdU", title: "...", caption: "...", cat: "automotive" }
+
+   "vertical: true" renders a 9:16 frame (reels/stories); omit it for 16:9.
    -------------------------------------------------------------------------- */
 window.FILMS = [
   {
+    type: "video",
     src: "assets/video/mashup-2024.mp4",
     poster: "assets/video/mashup-2024-poster.jpg",
     title: "MashUp 2024",
@@ -107,10 +125,47 @@ window.FILMS = [
     vertical: true,
   },
   {
+    type: "video",
     src: "assets/video/holiday-testimonials.mp4",
     poster: "assets/video/holiday-testimonials-poster.jpg",
     title: "Holiday Testimonials",
     caption: "Instagram story — customer stories",
+    cat: "customer",
     vertical: true,
+  },
+  {
+    type: "youtube",
+    id: "qUy0frM-kdU",
+    title: "Perilla Ramen Popup",
+    caption: "Customer experience",
+    cat: "customer",
+  },
+  {
+    type: "youtube",
+    id: "3IzNXROZck8",
+    title: "Smoke Queen v1",
+    caption: "Customer experience",
+    cat: "customer",
+  },
+  {
+    type: "youtube",
+    id: "e9zGykJgoPQ",
+    title: "TS 5hr Enduro",
+    caption: "Automotive",
+    cat: "automotive",
+  },
+  {
+    type: "youtube",
+    id: "46Aa1BpYXrc",
+    title: "1959 Porsche 356A Tribute",
+    caption: "The Autobarn Collection",
+    cat: "automotive",
+  },
+  {
+    type: "youtube",
+    id: "OI0QqaioWeU",
+    title: "1960 Alfa Giulietta Sprint",
+    caption: "The Autobarn Collection",
+    cat: "automotive",
   },
 ];

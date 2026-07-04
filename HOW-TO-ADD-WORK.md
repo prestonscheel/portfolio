@@ -28,15 +28,30 @@ Everything you'd normally edit lives in **one file: `js/data.js`**. No build ste
 
 ## Add a video
 
+**Local file:**
 1. Drop an H.264 `.mp4` into `assets/video/` (aim for under ~30MB; 1080p or 720p is plenty).
 2. Add a poster frame JPEG next to it (a still from the video).
-3. Add an entry to the `FILMS` array in `js/data.js`.
+3. Add an entry to the `FILMS` array in `js/data.js`:
+
+   ```js
+   { type: "video", src: "assets/video/my-video.mp4", poster: "assets/video/my-video-poster.jpg",
+     title: "My Video", caption: "...", cat: "automotive", vertical: true },
+   ```
 
 To convert a `.mov` on a Mac without installing anything:
 
 ```
 avconvert --preset Preset1280x720 --source "MyVideo.mov" --output site/assets/video/my-video.mp4
 ```
+
+**YouTube video:** no download needed — just grab the video ID from the share URL
+(`youtu.be/qUy0frM-kdU` → id is `qUy0frM-kdU`) and add an entry:
+
+```js
+{ type: "youtube", id: "qUy0frM-kdU", title: "My Video", caption: "...", cat: "automotive" },
+```
+
+Omit `vertical: true` for normal 16:9 YouTube uploads; include it for 9:16 Shorts.
 
 ## Add a new category
 
@@ -52,6 +67,9 @@ window.CATEGORIES = {
 ```
 
 Then use `cat: "aerial"` on works. The filter button appears automatically.
+
+Films work the same way, via `FILM_CATEGORIES` and the `cat` field on `FILMS` entries. Films
+without a `cat` only show up under "All".
 
 ## Edit text, email, and social links
 

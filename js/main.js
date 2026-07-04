@@ -183,22 +183,58 @@
 
   /* ----------------------------------------------------------------- films */
   var filmRow = document.getElementById("filmRow");
-  if (filmRow && window.FILMS) {
-    FILMS.forEach(function (f) {
-      var el = document.createElement("div");
-      el.className = "film";
-      el.innerHTML =
-        '<img src="' + f.poster + '" alt="' + f.title + '" loading="lazy" decoding="async">' +
-        '<button class="play" aria-label="Play ' + f.title + '">' +
-        '<span class="btn-circle"></span>' +
-        '<span class="label">' + f.title + '</span>' +
-        '<span class="sub">' + f.caption + "</span></button>";
-      el.querySelector(".play").addEventListener("click", function () {
+
+  function buildFilm(f) {
+    var el = document.createElement("div");
+    el.className = "film" + (f.vertical ? "" : " landscape");
+    var poster = f.type === "youtube" ? "https://i.ytimg.com/vi/" + f.id + "/hqdefault.jpg" : f.poster;
+    el.innerHTML =
+      '<img src="' + poster + '" alt="' + f.title + '" loading="lazy" decoding="async">' +
+      '<button class="play" aria-label="Play ' + f.title + '">' +
+      '<span class="btn-circle"></span>' +
+      '<span class="label">' + f.title + '</span>' +
+      '<span class="sub">' + f.caption + "</span></button>";
+    el.querySelector(".play").addEventListener("click", function () {
+      if (f.type === "youtube") {
+        el.innerHTML =
+          '<iframe src="https://www.youtube.com/embed/' + f.id + '?autoplay=1&rel=0" title="' + f.title +
+          '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+      } else {
         el.innerHTML =
           '<video src="' + f.src + '" poster="' + f.poster + '" controls autoplay playsinline></video>';
-      });
-      filmRow.appendChild(el);
+      }
     });
+    return el;
+  }
+
+  function renderFilms(filter) {
+    if (!filmRow) return;
+    filmRow.innerHTML = "";
+    var frag = document.createDocumentFragment();
+    FILMS.filter(function (f) {
+      return filter === "all" || f.cat === filter;
+    }).forEach(function (f) { frag.appendChild(buildFilm(f)); });
+    filmRow.appendChild(frag);
+  }
+
+  var filmFilterWrap = document.querySelector(".film-filters");
+  if (filmFilterWrap && filmRow && window.FILM_CATEGORIES) {
+    var fcats = Object.keys(FILM_CATEGORIES);
+    var fbtns = ['<button class="active" data-f="all">All</button>'];
+    fcats.forEach(function (c) {
+      fbtns.push('<button data-f="' + c + '">' + FILM_CATEGORIES[c] + "</button>");
+    });
+    filmFilterWrap.innerHTML = fbtns.join("");
+    filmFilterWrap.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      filmFilterWrap.querySelectorAll("button").forEach(function (x) { x.classList.remove("active"); });
+      b.classList.add("active");
+      renderFilms(b.getAttribute("data-f"));
+    });
+    renderFilms("all");
+  } else if (filmRow && window.FILMS) {
+    renderFilms("all");
   }
 
   /* ------------------------------------------------------------ animations */
