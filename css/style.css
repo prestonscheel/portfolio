@@ -251,6 +251,28 @@ body.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-8px) rotate
 .filters button.active { background: var(--ink); border-color: var(--ink); color: var(--bg); }
 
 /* -------------------------------------------------------------------- grid */
+.grid-group { margin-bottom: clamp(40px, 6vw, 72px); }
+.grid-group:last-child { margin-bottom: 0; }
+.grid-cat-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--display);
+  font-size: clamp(20px, 2.6vw, 32px);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  padding-bottom: 14px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+.grid-cat-heading .n {
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
 .grid { columns: 3 320px; column-gap: 18px; }
 .grid figure {
   break-inside: avoid;

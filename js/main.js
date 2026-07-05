@@ -47,22 +47,53 @@
   var grid = document.getElementById("workGrid");
   var flatList = []; // currently displayed works, for the lightbox
 
+  function buildFigure(w, i) {
+    var fig = document.createElement("figure");
+    fig.innerHTML =
+      '<img src="assets/img/md/' + w.slug + '.jpg" alt="' + w.title +
+      '" width="' + w.w + '" height="' + w.h + '" loading="lazy" decoding="async">' +
+      '<figcaption><span class="t">' + w.title + '</span><span class="c">' +
+      CATEGORIES[w.cat] + "</span></figcaption>";
+    fig.addEventListener("click", function () { openLightbox(i); });
+    return fig;
+  }
+
   function renderGrid(filter) {
     if (!grid) return;
     grid.innerHTML = "";
-    flatList = WORKS.filter(function (w) {
-      return filter === "all" || w.cat === filter;
-    });
+
+    var grouped = filter === "all";
+    if (grouped) {
+      var order = Object.keys(CATEGORIES);
+      flatList = WORKS.slice().sort(function (a, b) {
+        return order.indexOf(a.cat) - order.indexOf(b.cat);
+      });
+    } else {
+      flatList = WORKS.filter(function (w) { return w.cat === filter; });
+    }
+
+    var counts = {};
+    flatList.forEach(function (w) { counts[w.cat] = (counts[w.cat] || 0) + 1; });
+
     var frag = document.createDocumentFragment();
+    var currentGroup = null, currentCat = null;
     flatList.forEach(function (w, i) {
-      var fig = document.createElement("figure");
-      fig.innerHTML =
-        '<img src="assets/img/md/' + w.slug + '.jpg" alt="' + w.title +
-        '" width="' + w.w + '" height="' + w.h + '" loading="lazy" decoding="async">' +
-        '<figcaption><span class="t">' + w.title + '</span><span class="c">' +
-        CATEGORIES[w.cat] + "</span></figcaption>";
-      fig.addEventListener("click", function () { openLightbox(i); });
-      frag.appendChild(fig);
+      if (grouped && w.cat !== currentCat) {
+        currentCat = w.cat;
+        var wrap = document.createElement("div");
+        wrap.className = "grid-group";
+        wrap.innerHTML = '<h3 class="grid-cat-heading">' + CATEGORIES[currentCat] +
+          '<span class="n">' + String(counts[currentCat]).padStart(2, "0") + "</span></h3>";
+        currentGroup = document.createElement("div");
+        currentGroup.className = "grid";
+        wrap.appendChild(currentGroup);
+        frag.appendChild(wrap);
+      } else if (!currentGroup) {
+        currentGroup = document.createElement("div");
+        currentGroup.className = "grid";
+        frag.appendChild(currentGroup);
+      }
+      currentGroup.appendChild(buildFigure(w, i));
     });
     grid.appendChild(frag);
 
@@ -70,8 +101,9 @@
     if (countEl) countEl.textContent = String(flatList.length).padStart(2, "0") + " frames";
 
     if (hasGsap && !reduceMotion) {
-      gsap.set(grid.children, { opacity: 0, y: 30 });
-      ScrollTrigger.batch(grid.children, {
+      var figs = grid.querySelectorAll("figure");
+      gsap.set(figs, { opacity: 0, y: 30 });
+      ScrollTrigger.batch(figs, {
         start: "top 92%",
         once: true,
         batchMax: 6,
