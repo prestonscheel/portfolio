@@ -320,6 +320,28 @@ body.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-8px) rotate
   .grid figcaption { opacity: 1; transform: none; }
 }
 
+/* --------------------------------------------- collapsible sections
+   Each section shows PREVIEW (4) thumbnails until "Show more" is clicked.
+   The nth-child threshold below must stay PREVIEW + 1. */
+.grid-group.collapsed .grid > figure:nth-child(n + 5) { display: none; }
+.film-row.collapsed > .film:nth-child(n + 5) { display: none; }
+.show-more-wrap { display: flex; justify-content: center; margin-top: 28px; }
+.films .show-more-wrap { margin-top: 34px; }
+.show-more {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 11px 28px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.25s, border-color 0.25s, background 0.25s;
+}
+.show-more:hover { color: #fff; border-color: var(--accent); background: var(--accent); }
+
 /* ------------------------------------------------------------------- films */
 .films { background: var(--bg-2); }
 .film-row {

@@ -46,6 +46,7 @@
   /* ------------------------------------------------------------- work grid */
   var grid = document.getElementById("workGrid");
   var flatList = []; // currently displayed works, for the lightbox
+  var PREVIEW = 4;   // thumbnails shown per section before "Show more"
 
   function buildFigure(w, i) {
     var fig = document.createElement("figure");
@@ -56,6 +57,33 @@
       CATEGORIES[w.cat] + "</span></figcaption>";
     fig.addEventListener("click", function () { openLightbox(i); });
     return fig;
+  }
+
+  // Add a "Show more / Show less" control to a section wrapper that starts
+  // collapsed. `extras` are the figures hidden until the section is expanded.
+  function addShowMore(wrap, hiddenCount, extras) {
+    wrap.classList.add("collapsed");
+    var bwrap = document.createElement("div");
+    bwrap.className = "show-more-wrap";
+    var btn = document.createElement("button");
+    btn.className = "show-more";
+    btn.type = "button";
+    btn.textContent = "Show " + hiddenCount + " more";
+    btn.addEventListener("click", function () {
+      var collapsed = wrap.classList.toggle("collapsed");
+      if (!collapsed) {
+        btn.textContent = "Show less";
+        if (hasGsap && !reduceMotion && extras.length) {
+          gsap.fromTo(extras, { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 0.6, stagger: 0.05, ease: "power3.out", overwrite: true });
+        }
+      } else {
+        btn.textContent = "Show " + hiddenCount + " more";
+        wrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    });
+    bwrap.appendChild(btn);
+    wrap.appendChild(bwrap);
   }
 
   function renderGrid(filter) {
@@ -75,25 +103,41 @@
     var counts = {};
     flatList.forEach(function (w) { counts[w.cat] = (counts[w.cat] || 0) + 1; });
 
+    // Partition the flat list into sections (one per category when grouped,
+    // or a single section when a specific filter is active). Each item keeps
+    // its global index into flatList so the lightbox stays correct.
+    var sections = [];
+    if (grouped) {
+      var byCat = {};
+      flatList.forEach(function (w, i) { (byCat[w.cat] = byCat[w.cat] || []).push({ w: w, i: i }); });
+      Object.keys(CATEGORIES).forEach(function (c) {
+        if (byCat[c]) sections.push({ cat: c, items: byCat[c] });
+      });
+    } else {
+      sections.push({ cat: null, items: flatList.map(function (w, i) { return { w: w, i: i }; }) });
+    }
+
     var frag = document.createDocumentFragment();
-    var currentGroup = null, currentCat = null;
-    flatList.forEach(function (w, i) {
-      if (grouped && w.cat !== currentCat) {
-        currentCat = w.cat;
-        var wrap = document.createElement("div");
-        wrap.className = "grid-group";
-        wrap.innerHTML = '<h3 class="grid-cat-heading">' + CATEGORIES[currentCat] +
-          '<span class="n">' + String(counts[currentCat]).padStart(2, "0") + "</span></h3>";
-        currentGroup = document.createElement("div");
-        currentGroup.className = "grid";
-        wrap.appendChild(currentGroup);
-        frag.appendChild(wrap);
-      } else if (!currentGroup) {
-        currentGroup = document.createElement("div");
-        currentGroup.className = "grid";
-        frag.appendChild(currentGroup);
+    var previewFigs = [], extraFigs = [];
+    sections.forEach(function (sec) {
+      var wrap = document.createElement("div");
+      wrap.className = "grid-group";
+      if (sec.cat) {
+        wrap.innerHTML = '<h3 class="grid-cat-heading">' + CATEGORIES[sec.cat] +
+          '<span class="n">' + String(counts[sec.cat]).padStart(2, "0") + "</span></h3>";
       }
-      currentGroup.appendChild(buildFigure(w, i));
+      var g = document.createElement("div");
+      g.className = "grid";
+      var secExtras = [];
+      sec.items.forEach(function (it, idx) {
+        var fig = buildFigure(it.w, it.i);
+        g.appendChild(fig);
+        if (idx < PREVIEW) previewFigs.push(fig);
+        else { extraFigs.push(fig); secExtras.push(fig); }
+      });
+      wrap.appendChild(g);
+      if (sec.items.length > PREVIEW) addShowMore(wrap, sec.items.length - PREVIEW, secExtras);
+      frag.appendChild(wrap);
     });
     grid.appendChild(frag);
 
@@ -101,9 +145,11 @@
     if (countEl) countEl.textContent = String(flatList.length).padStart(2, "0") + " frames";
 
     if (hasGsap && !reduceMotion) {
-      var figs = grid.querySelectorAll("figure");
-      gsap.set(figs, { opacity: 0, y: 30 });
-      ScrollTrigger.batch(figs, {
+      // Only the visible preview thumbnails get the scroll-reveal; the hidden
+      // extras are left fully visible so they appear instantly when expanded.
+      if (extraFigs.length) gsap.set(extraFigs, { opacity: 1, y: 0 });
+      gsap.set(previewFigs, { opacity: 0, y: 30 });
+      ScrollTrigger.batch(previewFigs, {
         start: "top 92%",
         once: true,
         batchMax: 6,
@@ -242,11 +288,33 @@
   function renderFilms(filter) {
     if (!filmRow) return;
     filmRow.innerHTML = "";
+    // drop any Show-more control from a previous render
+    var oldWrap = filmRow.parentNode.querySelector(".show-more-wrap");
+    if (oldWrap) oldWrap.parentNode.removeChild(oldWrap);
+    filmRow.classList.remove("collapsed");
+
+    var list = FILMS.filter(function (f) { return filter === "all" || f.cat === filter; });
     var frag = document.createDocumentFragment();
-    FILMS.filter(function (f) {
-      return filter === "all" || f.cat === filter;
-    }).forEach(function (f) { frag.appendChild(buildFilm(f)); });
+    list.forEach(function (f) { frag.appendChild(buildFilm(f)); });
     filmRow.appendChild(frag);
+
+    if (list.length > PREVIEW) {
+      filmRow.classList.add("collapsed");
+      var hidden = list.length - PREVIEW;
+      var bwrap = document.createElement("div");
+      bwrap.className = "show-more-wrap";
+      var btn = document.createElement("button");
+      btn.className = "show-more";
+      btn.type = "button";
+      btn.textContent = "Show " + hidden + " more";
+      btn.addEventListener("click", function () {
+        var collapsed = filmRow.classList.toggle("collapsed");
+        btn.textContent = collapsed ? ("Show " + hidden + " more") : "Show less";
+        if (collapsed) filmRow.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+      bwrap.appendChild(btn);
+      filmRow.parentNode.appendChild(bwrap);
+    }
   }
 
   var filmFilterWrap = document.querySelector(".film-filters");
