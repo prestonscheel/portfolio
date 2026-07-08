@@ -285,21 +285,22 @@
     return el;
   }
 
-  function renderFilms(filter) {
-    if (!filmRow) return;
-    filmRow.innerHTML = "";
+  // Render a list of films into `container`, wiring up a Show more/less
+  // control when there are more than PREVIEW items.
+  function renderFilmsInto(container, list) {
+    if (!container) return;
+    container.innerHTML = "";
     // drop any Show-more control from a previous render
-    var oldWrap = filmRow.parentNode.querySelector(".show-more-wrap");
+    var oldWrap = container.parentNode.querySelector(".show-more-wrap");
     if (oldWrap) oldWrap.parentNode.removeChild(oldWrap);
-    filmRow.classList.remove("collapsed");
+    container.classList.remove("collapsed");
 
-    var list = FILMS.filter(function (f) { return filter === "all" || f.cat === filter; });
     var frag = document.createDocumentFragment();
     list.forEach(function (f) { frag.appendChild(buildFilm(f)); });
-    filmRow.appendChild(frag);
+    container.appendChild(frag);
 
     if (list.length > PREVIEW) {
-      filmRow.classList.add("collapsed");
+      container.classList.add("collapsed");
       var hidden = list.length - PREVIEW;
       var bwrap = document.createElement("div");
       bwrap.className = "show-more-wrap";
@@ -308,33 +309,46 @@
       btn.type = "button";
       btn.textContent = "Show " + hidden + " more";
       btn.addEventListener("click", function () {
-        var collapsed = filmRow.classList.toggle("collapsed");
+        var collapsed = container.classList.toggle("collapsed");
         btn.textContent = collapsed ? ("Show " + hidden + " more") : "Show less";
-        if (collapsed) filmRow.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        if (collapsed) container.scrollIntoView({ behavior: "smooth", block: "nearest" });
       });
       bwrap.appendChild(btn);
-      filmRow.parentNode.appendChild(bwrap);
+      container.parentNode.appendChild(bwrap);
     }
   }
 
-  var filmFilterWrap = document.querySelector(".film-filters");
-  if (filmFilterWrap && filmRow && window.FILM_CATEGORIES) {
-    var fcats = Object.keys(FILM_CATEGORIES);
-    var fbtns = ['<button class="active" data-f="all">All</button>'];
-    fcats.forEach(function (c) {
-      fbtns.push('<button data-f="' + c + '">' + FILM_CATEGORIES[c] + "</button>");
-    });
-    filmFilterWrap.innerHTML = fbtns.join("");
-    filmFilterWrap.addEventListener("click", function (e) {
-      var b = e.target.closest("button");
-      if (!b) return;
-      filmFilterWrap.querySelectorAll("button").forEach(function (x) { x.classList.remove("active"); });
-      b.classList.add("active");
-      renderFilms(b.getAttribute("data-f"));
-    });
-    renderFilms("all");
-  } else if (filmRow && window.FILMS) {
-    renderFilms("all");
+  // Short-Form & Social — locally uploaded video clips.
+  if (filmRow && window.FILMS) {
+    renderFilmsInto(filmRow, FILMS.filter(function (f) { return f.type === "video"; }));
+  }
+
+  // Long-Form Videos — YouTube links, filterable by category.
+  var longRow = document.getElementById("longRow");
+  var youtube = (window.FILMS || []).filter(function (f) { return f.type === "youtube"; });
+  if (longRow && youtube.length) {
+    var renderLong = function (filter) {
+      renderFilmsInto(longRow, youtube.filter(function (f) {
+        return filter === "all" || f.cat === filter;
+      }));
+    };
+    var longFilterWrap = document.querySelector("#longform .film-filters");
+    if (longFilterWrap && window.FILM_CATEGORIES) {
+      var fcats = Object.keys(FILM_CATEGORIES);
+      var fbtns = ['<button class="active" data-f="all">All</button>'];
+      fcats.forEach(function (c) {
+        fbtns.push('<button data-f="' + c + '">' + FILM_CATEGORIES[c] + "</button>");
+      });
+      longFilterWrap.innerHTML = fbtns.join("");
+      longFilterWrap.addEventListener("click", function (e) {
+        var b = e.target.closest("button");
+        if (!b) return;
+        longFilterWrap.querySelectorAll("button").forEach(function (x) { x.classList.remove("active"); });
+        b.classList.add("active");
+        renderLong(b.getAttribute("data-f"));
+      });
+    }
+    renderLong("all");
   }
 
   /* ------------------------------------------------------------ animations */
