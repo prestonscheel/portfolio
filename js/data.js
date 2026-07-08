@@ -11,8 +11,8 @@ window.SITE = {
   heroLines: ["PRESTON", "SCHEEL"],
   heroTag: "Photography & Video — Automotive · People · Places",
   email: "prestonscheel@gmail.com",
-  instagram: "https://www.instagram.com/",   // ← put your handle URL here
-  linkedin: "https://www.linkedin.com/",     // ← put your profile URL here
+  instagram: "https://www.instagram.com/preston_scheel_/",
+  linkedin: "https://www.linkedin.com/in/prestonscheel/",
   // Short intro shown on the home page.
   blurb:
     "I make images that move — classic Porsches at dusk, first looks on wedding mornings, and cities catching their last light. Every frame is built with intent.",
